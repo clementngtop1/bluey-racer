@@ -151,18 +151,6 @@
         let frames = 0;
         let animationId;
 
-        // Resize canvas
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            // Re-position player when canvas resizes
-            player.y = canvas.height - 120;
-            player.x = canvas.width / 2 - player.width / 2;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-        setupTouchControls();
-
         // Player car
         let player = {
             x: 0,
@@ -187,6 +175,7 @@
         leftZone.style.height = '100%';
         leftZone.style.zIndex = '5';
         leftZone.style.touchAction = 'none';
+        leftZone.style.cursor = 'pointer';
         rightZone.style.position = 'absolute';
         rightZone.style.top = '0';
         rightZone.style.right = '0';
@@ -194,8 +183,20 @@
         rightZone.style.height = '100%';
         rightZone.style.zIndex = '5';
         rightZone.style.touchAction = 'none';
+        rightZone.style.cursor = 'pointer';
         document.getElementById('game-container').appendChild(leftZone);
         document.getElementById('game-container').appendChild(rightZone);
+
+        // Resize canvas
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            // Re-position player when canvas resizes
+            player.y = canvas.height - 120;
+            player.x = canvas.width / 2 - player.width / 2;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
         function setupTouchControls() {
             leftZone.addEventListener('touchstart', (e) => {
@@ -245,6 +246,7 @@
                 touchRight = false;
             });
         }
+        setupTouchControls();
 
         function drawPixelCar(x, y, width, height, color, isPlayer = false) {
             // Car body
