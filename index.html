@@ -130,13 +130,13 @@
         <div id="start-screen">
             <h1>🚗 Bluey's Road Adventure</h1>
             <p>Avoid the traffic and have fun!</p>
-            <button id="start-btn">Start Game</button>
+            <button id="start-btn" onclick="startGame()">Start Game</button>
         </div>
 
         <div id="game-over-screen" class="hidden">
             <h1>🏁 Game Over!</h1>
             <p id="final-score">Score: 0</p>
-            <button id="restart-btn">Play Again</button>
+            <button id="restart-btn" onclick="startGame()">Play Again</button>
         </div>
     </div>
 
@@ -157,102 +157,26 @@
             y: 0,
             width: 60,
             height: 100,
-            color: '#4682B4', // Blue (Bluey style)
+            color: '#4682B4',
             speed: 7
         };
 
         // Obstacles
         let obstacles = [];
 
-        // Input handling
-        let touchLeft = false;
-        let touchRight = false;
-
-        // Touch zone overlays
-        const leftZone = document.createElement('div');
-        const rightZone = document.createElement('div');
-        leftZone.style.position = 'absolute';
-        leftZone.style.top = '0';
-        leftZone.style.left = '0';
-        leftZone.style.width = '50%';
-        leftZone.style.height = '100%';
-        leftZone.style.zIndex = '1';
-        leftZone.style.touchAction = 'none';
-        leftZone.style.cursor = 'pointer';
-        rightZone.style.position = 'absolute';
-        rightZone.style.top = '0';
-        rightZone.style.right = '0';
-        rightZone.style.width = '50%';
-        rightZone.style.height = '100%';
-        rightZone.style.zIndex = '1';
-        rightZone.style.touchAction = 'none';
-        rightZone.style.cursor = 'pointer';
-        document.getElementById('game-container').appendChild(leftZone);
-        document.getElementById('game-container').appendChild(rightZone);
+        // Input handling - simple approach
+        let isLeft = false;
+        let isRight = false;
 
         // Resize canvas
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            // Re-position player when canvas resizes
             player.y = canvas.height - 120;
             player.x = canvas.width / 2 - player.width / 2;
         }
         window.addEventListener('resize', resize);
         resize();
-
-        function setupTouchControls() {
-            leftZone.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                touchLeft = true;
-            });
-            leftZone.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                touchLeft = false;
-            });
-            leftZone.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                touchLeft = false;
-            });
-
-            rightZone.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                touchRight = true;
-            });
-            rightZone.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                touchRight = false;
-            });
-            rightZone.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                touchRight = false;
-            });
-
-            // Mouse fallback for testing on desktop
-            leftZone.addEventListener('mousedown', (e) => {
-                touchLeft = true;
-            });
-            leftZone.addEventListener('mouseup', (e) => {
-                touchLeft = false;
-            });
-            leftZone.addEventListener('mouseleave', (e) => {
-                touchLeft = false;
-            });
-
-            rightZone.addEventListener('mousedown', (e) => {
-                touchRight = true;
-            });
-            rightZone.addEventListener('mouseup', (e) => {
-                touchRight = false;
-            });
-            rightZone.addEventListener('mouseleave', (e) => {
-                touchRight = false;
-            });
-        }
-        setupTouchControls();
-
-        // Obstacles
-        let obstacles = [];
 
         function drawPixelCar(x, y, width, height, color, isPlayer = false) {
             // Car body
@@ -261,15 +185,15 @@
             
             // Windows
             ctx.fillStyle = '#87CEEB';
-            ctx.fillRect(x + 5, y + 10, width - 10, 15); // windshield
-            ctx.fillRect(x + 5, y + 40, width - 10, 15); // rear window
+            ctx.fillRect(x + 5, y + 10, width - 10, 15);
+            ctx.fillRect(x + 5, y + 40, width - 10, 15);
             
             // Wheels
             ctx.fillStyle = '#333';
-            ctx.fillRect(x - 2, y + 15, 4, 15); // front left
-            ctx.fillRect(x + width - 2, y + 15, 4, 15); // front right
-            ctx.fillRect(x - 2, y + height - 20, 4, 15); // back left
-            ctx.fillRect(x + width - 2, y + height - 20, 4, 15); // back right
+            ctx.fillRect(x - 2, y + 15, 4, 15);
+            ctx.fillRect(x + width - 2, y + 15, 4, 15);
+            ctx.fillRect(x - 2, y + height - 20, 4, 15);
+            ctx.fillRect(x + width - 2, y + height - 20, 4, 15);
             
             // Headlights
             ctx.fillStyle = '#FFD700';
@@ -305,21 +229,17 @@
         function update() {
             if (!gameRunning) return;
 
-            // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw road
             drawRoad();
 
             // Update player position
-            if (touchLeft && player.x > 20) {
+            if (isLeft && player.x > 20) {
                 player.x -= player.speed;
             }
-            if (touchRight && player.x < canvas.width - player.width - 20) {
+            if (isRight && player.x < canvas.width - player.width - 20) {
                 player.x += player.speed;
             }
 
-            // Draw player
             drawPixelCar(player.x, player.y, player.width, player.height, player.color, true);
 
             // Spawn obstacles
@@ -329,7 +249,7 @@
                 const obstacleWidth = 60;
                 const obstacleX = roadX + (roadWidth - obstacleWidth) * Math.random();
                 
-                const colors = ['#FF69B4', '#FFD700', '#32CD32', '#9370DB']; // Pink, Yellow, Green, Purple
+                const colors = ['#FF69B4', '#FFD700', '#32CD32', '#9370DB'];
                 const obstacleColor = colors[Math.floor(Math.random() * colors.length)];
                 
                 obstacles.push({
@@ -346,7 +266,6 @@
                 obstacles[i].y += gameSpeed;
                 drawPixelCar(obstacles[i].x, obstacles[i].y, obstacles[i].width, obstacles[i].height, obstacles[i].color);
                 
-                // Remove off-screen obstacles
                 if (obstacles[i].y > canvas.height) {
                     obstacles.splice(i, 1);
                     score += 10;
@@ -364,7 +283,6 @@
                 }
             }
 
-            // Increase speed over time
             frames++;
             if (frames % 600 === 0) {
                 gameSpeed += 1;
@@ -382,10 +300,6 @@
             frames = 0;
             player.x = canvas.width / 2 - player.width / 2;
             
-            // Disable touch zones by hiding them (or set pointer-events: none)
-            leftZone.style.display = 'none';
-            rightZone.style.display = 'none';
-            
             document.getElementById('score').textContent = 'Score: 0';
             document.getElementById('speed').textContent = 'Speed: 5';
             document.getElementById('start-screen').classList.add('hidden');
@@ -397,23 +311,39 @@
         function gameOver() {
             gameRunning = false;
             cancelAnimationFrame(animationId);
-            
-            // Re-enable touch zones
-            leftZone.style.display = 'block';
-            rightZone.style.display = 'block';
-            
             document.getElementById('final-score').textContent = `Score: ${score}`;
             document.getElementById('game-over-screen').classList.remove('hidden');
         }
 
-        // Keyboard controls (for desktop testing)
+        // Keyboard controls
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') touchLeft = true;
-            if (e.key === 'ArrowRight') touchRight = true;
+            if (e.key === 'ArrowLeft') isLeft = true;
+            if (e.key === 'ArrowRight') isRight = true;
         });
         window.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowLeft') touchLeft = false;
-            if (e.key === 'ArrowRight') touchRight = false;
+            if (e.key === 'ArrowLeft') isLeft = false;
+            if (e.key === 'ArrowRight') isRight = false;
+        });
+
+        // Touch controls for mobile
+        const container = document.getElementById('game-container');
+        container.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                const touchX = e.touches[0].clientX;
+                if (touchX < window.innerWidth / 2) {
+                    isLeft = true;
+                } else {
+                    isRight = true;
+                }
+            }
+        });
+        container.addEventListener('touchend', (e) => {
+            isLeft = false;
+            isRight = false;
+        });
+        container.addEventListener('touchcancel', (e) => {
+            isLeft = false;
+            isRight = false;
         });
 
         // Button listeners
