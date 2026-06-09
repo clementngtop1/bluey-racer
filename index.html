@@ -116,7 +116,7 @@
             width: 100%;
             text-align: center;
             color: rgba(0, 0, 0, 0.5);
-            font-size: 16px;
+            font-size: 14px;
             pointer-events: none;
         }
 
@@ -173,7 +173,7 @@
             width: 60,
             height: 100,
             color: '#4682B4',
-            speed: 7
+            speed: 10
         };
 
         // Obstacles
@@ -247,18 +247,18 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawRoad();
 
-            // Update player position
-            if (isLeft && player.x > 20) {
+            // Update player position - faster response
+            if (isLeft && player.x > 10) {
                 player.x -= player.speed;
             }
-            if (isRight && player.x < canvas.width - player.width - 20) {
+            if (isRight && player.x < canvas.width - player.width - 10) {
                 player.x += player.speed;
             }
 
             drawPixelCar(player.x, player.y, player.width, player.height, player.color, true);
 
-            // Spawn obstacles
-            if (frames % 60 === 0) {
+            // Spawn obstacles - more frequent
+            if (frames % 45 === 0) {
                 const roadWidth = Math.min(canvas.width, 400);
                 const roadX = (canvas.width - roadWidth) / 2;
                 const obstacleWidth = 60;
@@ -298,8 +298,9 @@
                 }
             }
 
+            // Increase speed over time - faster progression
             frames++;
-            if (frames % 600 === 0) {
+            if (frames % 300 === 0) {
                 gameSpeed += 1;
                 document.getElementById('speed').textContent = `Speed: ${gameSpeed}`;
             }
@@ -356,22 +357,33 @@
         });
 
         // Touch controls for mobile - attach to canvas only, not container
-        canvas.addEventListener('touchstart', (e) => {
+        // Use pointer events for faster response
+        canvas.addEventListener('pointerdown', (e) => {
             e.preventDefault();
-            if (e.touches.length > 0) {
-                const touchX = e.touches[0].clientX;
-                if (touchX < window.innerWidth / 2) {
-                    isLeft = true;
-                    isRight = false;
-                } else {
-                    isRight = true;
-                    isLeft = false;
-                }
+            const touchX = e.clientX;
+            if (touchX < window.innerWidth / 2) {
+                isLeft = true;
+                isRight = false;
+            } else {
+                isRight = true;
+                isLeft = false;
             }
-        }, { passive: false });
+        });
         
-        canvas.addEventListener('touchmove', (e) => {
+        canvas.addEventListener('pointerup', (e) => {
             e.preventDefault();
+            isLeft = false;
+            isRight = false;
+        });
+        
+        canvas.addEventListener('pointerleave', (e) => {
+            e.preventDefault();
+            isLeft = false;
+            isRight = false;
+        });
+        
+        // Fallback touch controls
+        canvas.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
                 const touchX = e.touches[0].clientX;
                 if (touchX < window.innerWidth / 2) {
@@ -385,13 +397,6 @@
         }, { passive: false });
         
         canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            isLeft = false;
-            isRight = false;
-        });
-        
-        canvas.addEventListener('touchcancel', (e) => {
-            e.preventDefault();
             isLeft = false;
             isRight = false;
         });
