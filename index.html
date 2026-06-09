@@ -161,6 +161,9 @@
             speed: 7
         };
 
+        // Obstacles
+        let obstacles = [];
+
         // Input handling
         let touchLeft = false;
         let touchRight = false;
@@ -173,7 +176,7 @@
         leftZone.style.left = '0';
         leftZone.style.width = '50%';
         leftZone.style.height = '100%';
-        leftZone.style.zIndex = '5';
+        leftZone.style.zIndex = '1';
         leftZone.style.touchAction = 'none';
         leftZone.style.cursor = 'pointer';
         rightZone.style.position = 'absolute';
@@ -181,7 +184,7 @@
         rightZone.style.right = '0';
         rightZone.style.width = '50%';
         rightZone.style.height = '100%';
-        rightZone.style.zIndex = '5';
+        rightZone.style.zIndex = '1';
         rightZone.style.touchAction = 'none';
         rightZone.style.cursor = 'pointer';
         document.getElementById('game-container').appendChild(leftZone);
@@ -247,6 +250,9 @@
             });
         }
         setupTouchControls();
+
+        // Obstacles
+        let obstacles = [];
 
         function drawPixelCar(x, y, width, height, color, isPlayer = false) {
             // Car body
@@ -368,9 +374,6 @@
             animationId = requestAnimationFrame(update);
         }
 
-        // Obstacles
-        let obstacles = [];
-
         function startGame() {
             gameRunning = true;
             score = 0;
@@ -378,6 +381,10 @@
             obstacles = [];
             frames = 0;
             player.x = canvas.width / 2 - player.width / 2;
+            
+            // Disable touch zones by hiding them (or set pointer-events: none)
+            leftZone.style.display = 'none';
+            rightZone.style.display = 'none';
             
             document.getElementById('score').textContent = 'Score: 0';
             document.getElementById('speed').textContent = 'Speed: 5';
@@ -390,6 +397,11 @@
         function gameOver() {
             gameRunning = false;
             cancelAnimationFrame(animationId);
+            
+            // Re-enable touch zones
+            leftZone.style.display = 'block';
+            rightZone.style.display = 'block';
+            
             document.getElementById('final-score').textContent = `Score: ${score}`;
             document.getElementById('game-over-screen').classList.remove('hidden');
         }
