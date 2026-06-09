@@ -295,8 +295,6 @@
             }
 
             animationId = requestAnimationFrame(update);
-            document.getElementById('start-screen').classList.remove('hidden');
-            document.getElementById('game-over-screen').classList.add('hidden');
         }
 
         function startGame(level) {
@@ -350,27 +348,46 @@
         // Touch controls for mobile
         const container = document.getElementById('game-container');
         container.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             if (e.touches.length > 0) {
                 const touchX = e.touches[0].clientX;
                 if (touchX < window.innerWidth / 2) {
                     isLeft = true;
+                    isRight = false;
                 } else {
                     isRight = true;
+                    isLeft = false;
                 }
             }
-        });
+        }, { passive: false });
+        
+        container.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                const touchX = e.touches[0].clientX;
+                if (touchX < window.innerWidth / 2) {
+                    isLeft = true;
+                    isRight = false;
+                } else {
+                    isRight = true;
+                    isLeft = false;
+                }
+            }
+        }, { passive: false });
+        
         container.addEventListener('touchend', (e) => {
+            e.preventDefault();
             isLeft = false;
             isRight = false;
         });
+        
         container.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
             isLeft = false;
             isRight = false;
         });
 
-        // Button listeners
-        document.getElementById('start-btn').addEventListener('click', startGame);
-        document.getElementById('restart-btn').addEventListener('click', startGame);
+        // Button listeners - These were removed when I removed the start button
     </script>
 </body>
 </html>
