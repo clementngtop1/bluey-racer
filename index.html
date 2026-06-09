@@ -30,6 +30,7 @@
         canvas {
             display: block;
             background: #87CEEB;
+            touch-action: none;
         }
 
         #ui-layer {
@@ -94,10 +95,19 @@
             cursor: pointer;
             box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
             transition: transform 0.1s;
+            margin: 10px;
+            z-index: 20;
         }
 
         button:active {
             transform: scale(0.95);
+        }
+
+        .level-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 20;
         }
 
         .controls-hint {
@@ -130,18 +140,18 @@
         <div id="start-screen">
             <h1>🚗 Bluey's Road Adventure</h1>
             <p>Avoid the traffic and have fun!</p>
-            <div style="margin-bottom: 20px;">
+            <div class="level-buttons">
                 <p style="margin-bottom: 10px;">Select Level:</p>
-                <button onclick="startGame(1)" style="background: #9370DB; margin: 5px;">Level 1 (Slow)</button>
-                <button onclick="startGame(2)" style="background: #32CD32; margin: 5px;">Level 2 (Medium)</button>
-                <button onclick="startGame(3)" style="background: #FF69B4; margin: 5px;">Level 3 (Fast)</button>
+                <button onclick="startGame(1)" style="background: #9370DB;">Level 1 (Slow)</button>
+                <button onclick="startGame(2)" style="background: #32CD32;">Level 2 (Medium)</button>
+                <button onclick="startGame(3)" style="background: #FF69B4;">Level 3 (Fast)</button>
             </div>
         </div>
 
         <div id="game-over-screen" class="hidden">
             <h1>🏁 Game Over!</h1>
             <p id="final-score">Score: 0</p>
-            <button id="restart-btn" onclick="showLevelSelection()">Play Again</button>
+            <button onclick="showLevelSelection()">Play Again</button>
         </div>
     </div>
 
@@ -169,7 +179,7 @@
         // Obstacles
         let obstacles = [];
 
-        // Input handling - simple approach
+        // Input handling
         let isLeft = false;
         let isRight = false;
 
@@ -345,9 +355,8 @@
             if (e.key === 'ArrowRight') isRight = false;
         });
 
-        // Touch controls for mobile
-        const container = document.getElementById('game-container');
-        container.addEventListener('touchstart', (e) => {
+        // Touch controls for mobile - attach to canvas only, not container
+        canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (e.touches.length > 0) {
                 const touchX = e.touches[0].clientX;
@@ -361,7 +370,7 @@
             }
         }, { passive: false });
         
-        container.addEventListener('touchmove', (e) => {
+        canvas.addEventListener('touchmove', (e) => {
             e.preventDefault();
             if (e.touches.length > 0) {
                 const touchX = e.touches[0].clientX;
@@ -375,19 +384,17 @@
             }
         }, { passive: false });
         
-        container.addEventListener('touchend', (e) => {
+        canvas.addEventListener('touchend', (e) => {
             e.preventDefault();
             isLeft = false;
             isRight = false;
         });
         
-        container.addEventListener('touchcancel', (e) => {
+        canvas.addEventListener('touchcancel', (e) => {
             e.preventDefault();
             isLeft = false;
             isRight = false;
         });
-
-        // Button listeners - These were removed when I removed the start button
     </script>
 </body>
 </html>
