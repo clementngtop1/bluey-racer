@@ -130,13 +130,18 @@
         <div id="start-screen">
             <h1>🚗 Bluey's Road Adventure</h1>
             <p>Avoid the traffic and have fun!</p>
-            <button id="start-btn" onclick="startGame()">Start Game</button>
+            <div style="margin-bottom: 20px;">
+                <p style="margin-bottom: 10px;">Select Level:</p>
+                <button onclick="startGame(1)" style="background: #9370DB; margin: 5px;">Level 1 (Slow)</button>
+                <button onclick="startGame(2)" style="background: #32CD32; margin: 5px;">Level 2 (Medium)</button>
+                <button onclick="startGame(3)" style="background: #FF69B4; margin: 5px;">Level 3 (Fast)</button>
+            </div>
         </div>
 
         <div id="game-over-screen" class="hidden">
             <h1>🏁 Game Over!</h1>
             <p id="final-score">Score: 0</p>
-            <button id="restart-btn" onclick="startGame()">Play Again</button>
+            <button id="restart-btn" onclick="showLevelSelection()">Play Again</button>
         </div>
     </div>
 
@@ -290,18 +295,29 @@
             }
 
             animationId = requestAnimationFrame(update);
+            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('game-over-screen').classList.add('hidden');
         }
 
-        function startGame() {
+        function startGame(level) {
             gameRunning = true;
             score = 0;
-            gameSpeed = 5;
-            obstacles = [];
             frames = 0;
+            
+            // Set game speed based on level
+            if (level === 1) {
+                gameSpeed = 3;
+            } else if (level === 2) {
+                gameSpeed = 6;
+            } else {
+                gameSpeed = 9; // Level 3
+            }
+            
+            obstacles = [];
             player.x = canvas.width / 2 - player.width / 2;
             
             document.getElementById('score').textContent = 'Score: 0';
-            document.getElementById('speed').textContent = 'Speed: 5';
+            document.getElementById('speed').textContent = `Speed: ${gameSpeed}`;
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-over-screen').classList.add('hidden');
             
@@ -313,6 +329,12 @@
             cancelAnimationFrame(animationId);
             document.getElementById('final-score').textContent = `Score: ${score}`;
             document.getElementById('game-over-screen').classList.remove('hidden');
+            document.getElementById('start-screen').classList.add('hidden');
+        }
+
+        function showLevelSelection() {
+            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('game-over-screen').classList.add('hidden');
         }
 
         // Keyboard controls
